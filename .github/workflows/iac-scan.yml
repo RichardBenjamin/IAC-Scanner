@@ -31,6 +31,13 @@ jobs:
         run: |
           cat scan-results.log
 
+
+      - name: Upload scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: iac-scan-report
+          path: scan-results.log
+
       - name:  Fail if HIGH severity issues are found
         run: |
           if grep -q "\[HIGH\]" scan-results.log; then
