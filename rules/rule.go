@@ -3,6 +3,7 @@ package rules
 import(
 	"fmt"
 	"regexp"
+	"os"
 )
 
 // Rule is the standard format used across all scanners
