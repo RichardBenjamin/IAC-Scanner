@@ -36,6 +36,6 @@ func RunScanner(root string){
 	})
 
 	if err != nil {
-		fmt.Println("Error scanning %s: %v\n", root, err)
+		fmt.Printf("Error scanning %s: %v\n", root, err)
 	}
 }
