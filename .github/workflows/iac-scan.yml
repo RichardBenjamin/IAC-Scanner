@@ -33,7 +33,7 @@ jobs:
 
 
       - name: Upload scan results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: iac-scan-report
           path: scan-results.log
