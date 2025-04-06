@@ -6,6 +6,6 @@ import(
 )
 
 func ScanTerraform(path string){
-	fmt.Println("Scanning Terraform file: %s\n", path)
+	fmt.Printf("Scanning Terraform file: %s\n", path)
 	rules.CheckTerraform(path)
 }

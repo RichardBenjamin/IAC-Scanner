@@ -29,7 +29,6 @@ func RunScanner(root string){
 		case "":
 			if filepath.Base(path) == "Dockerfile"{
 				fmt.Println("This is a DockerFile")
-				// fmt.Println("Checking")
 				scanDockerFile(path)
 			}
 		}
