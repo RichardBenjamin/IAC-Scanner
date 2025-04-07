@@ -63,4 +63,4 @@ jobs:
                -F "initial_comment= *IAC Scan Failed!*\nRepo: ${{ github.repository }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Workflow>" \
                -F channels=${{ secrets.SLACK_CHANNEL_ID }} \
                -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
-               https://slack.com/api/files.upload
+               https://slack.com/api/files.upload.v2
