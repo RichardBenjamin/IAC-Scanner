@@ -24,23 +24,22 @@ jobs:
           ./scanner/scan.sh > scan_output.log 2>&1 || true
         continue-on-error: true
 
-      - name:  Set up Go
+      - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.22'
 
-      - name:  Build IAC-Scanner
+      - name: Build IAC-Scanner
         run: |
           go build -o iac-scanner
 
-      - name:  Run IAC-Scanner on target folder
+      - name: Run IAC-Scanner on target folder
         run: |
           ./iac-scanner ./test-files > scan-results.log
 
-      - name:  Display scan results
+      - name: Display scan results
         run: |
           cat scan-results.log
-
 
       - name: Upload scan results
         uses: actions/upload-artifact@v4
@@ -48,19 +47,44 @@ jobs:
           name: iac-scan-report
           path: scan-results.log
 
-      - name:  Fail if HIGH severity issues are found
+      - name: Fail if HIGH severity issues are found
         run: |
           if grep -q "\[HIGH\]" scan-results.log; then
-          echo "High severity issues detected. Failing the job!"
-          exit 1
+            echo "High severity issues detected. Failing the job!"
+            exit 1
           fi
-
 
       - name: Upload full logs to Slack (if scan fails)
         if: always()
         run: |
-          curl -F file=@scan-results.log \
-               -F "initial_comment= *IAC Scan Failed!*\nRepo: ${{ github.repository }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Workflow>" \
-               -F channels=${{ secrets.SLACK_CHANNEL_ID }} \
-               -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
-               https://slack.com/api/files.upload
+          # Step 1: Get the upload URL from Slack
+          UPLOAD_RESPONSE=$(curl -s \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"filename\":\"scan-results.log\", \"length\":$(wc -c < scan-results.log), \"channels\":\"${{ secrets.SLACK_CHANNEL_ID }}\"}" \
+            https://slack.com/api/files.getUploadURLExternal)
+          
+          # Parse the response to get the upload URL and file ID
+          UPLOAD_URL=$(echo $UPLOAD_RESPONSE | jq -r '.upload_url')
+          FILE_ID=$(echo $UPLOAD_RESPONSE | jq -r '.file_id')
+          
+          if [ "$UPLOAD_URL" == "null" ] || [ "$FILE_ID" == "null" ]; then
+            echo "Failed to get upload URL from Slack. Response: $UPLOAD_RESPONSE"
+            exit 1
+          fi
+          
+          # Step 2: Upload the file to the provided URL
+          curl -s \
+            -X POST \
+            -H "Content-Type: multipart/form-data" \
+            -F "file=@scan-results.log" \
+            "$UPLOAD_URL"
+          
+          # Step 3: Complete the upload process
+          curl -s \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"files\":[\"$FILE_ID\"], \"initial_comment\":\"*IAC Scan Failed!*\nRepo: ${{ github.repository }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Workflow>\"}" \
+            https://slack.com/api/files.completeUploadExternal
