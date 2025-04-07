@@ -3,9 +3,6 @@ package scanner
 import(
 	"fmt"
 	"os"
-    // "IAC-Scanner/scanner/docker"
-    // "IAC-Scanner/scanner/k8s"
-    // "IAC-Scanner/scanner/terraform"
 	"path/filepath"
 )
 

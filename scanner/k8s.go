@@ -11,3 +11,4 @@ func scanKubernetes(path string){
 	rules.CheckKubernetesYAML(path)
 }
 
+
