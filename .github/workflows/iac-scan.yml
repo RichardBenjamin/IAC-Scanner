@@ -58,19 +58,28 @@ jobs:
       - name: Get Slack Upload URL
         id: get_upload_url
         run: |
-          file_size=$(stat -c %s scan-results.log)
+          FILE_NAME="scan-results.log"
+          FILE_SIZE=$(wc -c < "$FILE_NAME" | xargs)
+
+          echo "Uploading $FILE_NAME ($FILE_SIZE bytes)"
+
           response=$(curl -s -X POST https://slack.com/api/files.getUploadURLExternal \
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json; charset=utf-8" \
-            --data "{\"filename\":\"scan-results.log\",\"length\":$file_size,\"alt_text\":\"Scan Results Log\"}")
+            --data "$(jq -n \
+              --arg filename "$FILE_NAME" \
+              --argjson length "$FILE_SIZE" \
+              --arg alt_text "Scan Results Log" \
+              '{filename: $filename, length: $length, alt_text: $alt_text}')")
 
           echo "Slack API response: $response"
 
-          upload_url=$(echo $response | jq -r '.upload_url')
-          file_id=$(echo $response | jq -r '.file_id')
+          upload_url=$(echo "$response" | jq -r '.upload_url')
+          file_id=$(echo "$response" | jq -r '.file_id')
 
           echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
           echo "file_id=$file_id" >> $GITHUB_OUTPUT
+
 
       - name: Upload file to Slack
         run: |
