@@ -7,10 +7,20 @@ on:
     branches: [main]
 
 jobs:
-  iac-scan:
-    runs-on: ubuntu-latest
+  workflow_dispatch:
+    runs-on: ubuntu-latest 
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
+      - name: Slack notification
+      - uses: act10ns/slack@v2
+        with:
+          channel: '#all-devsecops
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+        if: always()
+
       - name:  Checkout code
         uses: actions/checkout@v3
 
