@@ -54,19 +54,21 @@ jobs:
             exit 1
           fi
         continue-on-error: true
-        
+
       - name: Get Slack Upload URL
         id: get_upload_url
         run: |
+          file_size=$(stat -c %s scan-results.log)
           response=$(curl -s -X POST https://slack.com/api/files.getUploadURLExternal \
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            --data '{"filename":"scan-results.log", "length": 0, "alt_text":"Scan Results"}')
-          
+            -H "Content-Type: application/json; charset=utf-8" \
+            --data "{\"filename\":\"scan-results.log\",\"length\":$file_size,\"alt_text\":\"Scan Results Log\"}")
+
           echo "Slack API response: $response"
+
           upload_url=$(echo $response | jq -r '.upload_url')
           file_id=$(echo $response | jq -r '.file_id')
-          
+
           echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
           echo "file_id=$file_id" >> $GITHUB_OUTPUT
 
