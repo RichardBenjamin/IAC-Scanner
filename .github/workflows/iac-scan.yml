@@ -58,12 +58,14 @@ jobs:
         if: always()
         run: |
           # Step 1: Get the upload URL from Slack
-          UPLOAD_RESPONSE=$(curl -s \
-            -X POST \
+            UPLOAD_RESPONSE=$(curl -s \
+           -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"filename\":\"scan-results.log\", \"length\":$(wc -c < scan-results.log), \"channels\":\"${{ secrets.SLACK_CHANNEL_ID }}\"}" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d "{\"filename\":\"scan-results.log\", \"length\":$(stat -c%s scan-results.log), \"channels\":\"${{ secrets.SLACK_CHANNEL_ID }}\"}" \
             https://slack.com/api/files.getUploadURLExternal)
+          
+          echo "Upload response: $UPLOAD_RESPONSE"
           
           # Parse the response to get the upload URL and file ID
           UPLOAD_URL=$(echo $UPLOAD_RESPONSE | jq -r '.upload_url')
