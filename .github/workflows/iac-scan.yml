@@ -18,12 +18,12 @@ jobs:
     steps:
 
      - name: Send Slack alert on failure
-       if: failure()
+       if: always()
        uses: slackapi/slack-github-action@v1.24.0
        with:
          payload: |
             {
-              "text": "🚨 *IAC Scan Failed!*",
+              "text": " *IAC Scan Failed!*",
               "blocks": [
                 {
                   "type": "section",
