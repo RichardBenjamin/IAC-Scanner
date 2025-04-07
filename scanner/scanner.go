@@ -24,7 +24,7 @@ func RunScanner(root string){
 		
 		case ".yaml", ".yml":
 			scanKubernetes(path)
-			fmt.Printf("This is a Kubernetes file\n")
+			fmt.Printf("This is a Kubernetes file")
 		
 		case "":
 			if filepath.Base(path) == "Dockerfile"{
