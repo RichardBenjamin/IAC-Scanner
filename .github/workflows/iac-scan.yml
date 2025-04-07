@@ -36,13 +36,13 @@ jobs:
             }
 
 
-     - name: Slack notification
-       uses: act10ns/slack@v2
-       with:
-          channel: '#all-devsecops'
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-       if: always()
+    #  - name: Slack notification
+    #    uses: act10ns/slack@v2
+    #    with:
+    #       channel: '#all-devsecops'
+    #       status: ${{ job.status }}
+    #       steps: ${{ toJson(steps) }}
+    #    if: always()
 
      - name:  Checkout code
        uses: actions/checkout@v3
