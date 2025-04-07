@@ -119,7 +119,7 @@ var k8sRules = []K8sRule{
 		Pattern:  regexp.MustCompile(`(?i)securityContext:\s*{?\s*}?`),
 		Message:  "Security context not properly defined",
 		Enabled:  true,
-	}
+	},
 }
 
 func CheckKubernetesYAML(file string) {
