@@ -99,7 +99,7 @@ var k8sRules = []K8sRule{
 	// {
 	// 	Name:     "Missing Liveness/Readiness Probes",
 	// 	Category: "Observability",
-	// 	Severity: "LOW",
+	// 	Severity: "LOW",,,
 	// 	Pattern:  regexp.MustCompile(`(?i)containers:([\s\S]*?)(?!livenessProbe|readinessProbe)`),
 	// 	Message:  "Missing liveness or readiness probes",
 	// 	Enabled:  true,
