@@ -61,4 +61,4 @@ jobs:
           🔗 *S3 Logs:* <$URL>\n
           📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
               }" \
-              ${{ secrets.SLACK_WEBHOOK_URL }}
+              ${{ secrets.SLACK_WEBHOOK_URL2}}
