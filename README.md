@@ -302,7 +302,7 @@ MIT License © 2025 — Your Name or Organization
 
 
 
-
+i have added a pipeline to test the files on github. i have added the the feature of sending the logs as artifact and notification link to a slack channel 
 
 
 

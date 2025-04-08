@@ -73,7 +73,7 @@ jobs:
       # --- Upload to S3 ---
       - name: Set log filename
         id: logfile
-        run: echo "filename=logs/log-${{ github.run_id }}.txt" GITHUB_OUTPUT
+        run: echo "filename=logs/log-${{ github.run_id }}.txt" >> $GITHUB_OUTPUT
 
       - name: Upload log to S3
         run: |
