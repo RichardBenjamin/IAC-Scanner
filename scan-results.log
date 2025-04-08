@@ -1,0 +1,4 @@
+[HIGH] /home/kene/Documents/sample.yaml: Privileged container detected
+[HIGH] /home/kene/Documents/sample.yaml: Pod uses host network, PID, or IPC namespace
+[HIGH] /home/kene/Documents/sample.yaml: HostPath volume usage detected
+[LOW] /home/kene/Documents/sample.yaml: Security context not properly defined
