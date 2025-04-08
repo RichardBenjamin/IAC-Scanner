@@ -91,8 +91,6 @@ jobs:
       
       - name: Notify Slack
         run: |
-          SHORT_LOG=$(tail -n 10 log.txt | sed 's/"/\\"/g')
-          echo "S3 Link: ${{ steps.signed_url.outputs.url }}"
           curl -X POST -H 'Content-type: application/json' \
           --data "{
             \"text\": \"✅ CI Build Complete* for \`main\`\n
