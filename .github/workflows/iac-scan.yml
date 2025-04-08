@@ -45,7 +45,7 @@ jobs:
         id: signed_url
         run: |
           url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
-           echo $url
+          echo "url=$url" >> $GITHUB_OUTPUT
 
       # - name: Debug Signed URL
       #   run: echo "Signed URL: ${{ steps.signed_url.outputs.url }}"
@@ -56,6 +56,7 @@ jobs:
       - name: Notify Slack
         run: |
           SHORT_LOG=$(tail -n 10 log.txt | sed 's/"/\\"/g')
+          echo "S3 Link: ${{ steps.signed_url.outputs.url }}"
           curl -X POST -H 'Content-type: application/json' \
           --data "{
             \"text\": \"✅ CI Build Complete* for \`main\`\n
