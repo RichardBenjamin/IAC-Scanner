@@ -51,9 +51,9 @@ jobs:
         run: |
           if grep -q "\[HIGH\]" scan-results.log; then
             echo "High severity issues detected. Failing the job!"
-            exit 1
+            exit 1  if: always()
           fi
-        continue-on-error: true
+      # continue-on-error: true
       
       # --- Upload to GitHub Artifacts ---
       - name: Upload log to GitHub Artifacts
@@ -90,6 +90,7 @@ jobs:
 
       
       - name: Notify Slack
+        if: always()
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data "{
