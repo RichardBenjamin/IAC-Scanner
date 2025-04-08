@@ -57,6 +57,7 @@ jobs:
       
       # --- Upload to GitHub Artifacts ---
       - name: Upload log to GitHub Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-log
