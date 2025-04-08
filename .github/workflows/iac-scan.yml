@@ -61,7 +61,7 @@ jobs:
           --data "{
             \"text\": \"✅ CI Build Complete* for \`main\`\n
           \`\`\`${SHORT_LOG}\`\`\`\n
-          🔗 *S3 Logs:* <$url>\n
+          🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
           📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
               }" \
               ${{ secrets.SLACK_WEBHOOK_URL2}}
