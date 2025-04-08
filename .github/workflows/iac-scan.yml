@@ -99,3 +99,9 @@ jobs:
           🔗 *GitHub Artifact:* <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}>
               \"}" \
               ${{ secrets.SLACK_WEBHOOK_URL2}}
+
+      - name: Fail the job if high severity issues were found
+        if: steps.scan_check.outputs.fail == 'true'
+        run: |
+          echo "Marking job as failed due to HIGH severity issues."
+          exit 1
