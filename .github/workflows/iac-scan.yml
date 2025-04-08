@@ -48,8 +48,14 @@ jobs:
         run: |
           if grep -q "\[HIGH\]" scan-results.log; then
             echo "High severity issues detected. Failing the job!"
+            message=" High severity issues detected. Failing the job!"
             exit 1 
+
+          else
+            message="No HIGH severity issues found."
+            echo "$message"
           fi
+          
       # continue-on-error: true
       
       # --- Upload to GitHub Artifacts ---
@@ -96,7 +102,7 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data "{
-            \"text\": \" Scan Complete* \n
+            \"text\": \" Scan Complete "$message \n
           🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
           🔗 *GitHub Artifact:* <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}>
               \"}" \
