@@ -45,15 +45,18 @@ jobs:
           path: scan-results.log
 
       - name: Fail if HIGH severity issues are found
+        id: scan_check
         run: |
           if grep -q "\[HIGH\]" scan-results.log; then
             echo "High severity issues detected. Failing the job!"
             message=" High severity issues detected. Failing the job!"
+            echo "message=$message" >> $GITHUB_OUTPUT
             exit 1 
 
           else
             message="No HIGH severity issues found."
-            echo "$message"
+            echo "$message" 
+            echo "message=$message" >> $GITHUB_OUTPUT
           fi
           
       # continue-on-error: true
