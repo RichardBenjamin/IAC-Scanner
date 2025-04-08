@@ -47,8 +47,8 @@ jobs:
           url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
           echo "url=$url" >> $GITHUB_OUTPUT
 
-      - name: Debug Signed URL
-        run: echo "Signed URL ${{ steps.signed_url.outputs.url }}"
+      # - name: Debug Signed URL
+      #   run: echo "Signed URL: ${{ steps.signed_url.outputs.url }}"
 
       # --- Send Slack Notification ---
 
@@ -60,7 +60,7 @@ jobs:
           --data "{
             \"text\": \"✅ CI Build Complete* for \`main\`\n
           \`\`\`${SHORT_LOG}\`\`\`\n
-          🔗 *S3 Logs:* <$URL>\n
+          🔗 *S3 Logs:* <$url>\n
           📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
               }" \
               ${{ secrets.SLACK_WEBHOOK_URL2}}
