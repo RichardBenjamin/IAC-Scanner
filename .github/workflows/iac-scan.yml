@@ -51,7 +51,7 @@ jobs:
         run: |
           if grep -q "\[HIGH\]" scan-results.log; then
             echo "High severity issues detected. Failing the job!"
-            exit 1  if: always()
+            exit 1 
           fi
       # continue-on-error: true
       
