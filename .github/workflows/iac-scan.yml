@@ -56,4 +56,4 @@ jobs:
             \"text\": \"📦 *CI Build Complete* for \`${{ github.ref_name }}\`\n
           🔗 *GitHub Artifact:* <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}>
           \"}" \
-              ${{ secrets.SLACK_WEBHOOK_URL }}
+              ${{ secrets.SLACK_WEBHOOK_URL2}}
