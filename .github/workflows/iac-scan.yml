@@ -53,10 +53,11 @@ jobs:
             echo "High severity issues detected. Failing the job!"
             exit 1
           fi
-        continue-on-error: true
+       #continue-on-error: true
       
       # --- Upload to GitHub Artifacts ---
       - name: Upload log to GitHub Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-log
@@ -93,8 +94,7 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data "{
-            \"text\": \"✅ CI Build Complete* for \`main\`\n
-          \`\`\`${SHORT_LOG}\`\`\`\n
+            \"text\": \" Scan Complete* for \`main\`\n
           🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
           🔗 *GitHub Artifact:* <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}>
               \"}" \
