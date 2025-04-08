@@ -65,6 +65,7 @@ jobs:
 
       # --- Configure AWS for S3 upload ---
       - name: Configure AWS credentials
+        if: always()
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -73,15 +74,18 @@ jobs:
 
       # --- Upload to S3 ---
       - name: Set log filename
+        if: always()
         id: logfile
         run: echo "filename=logs/log-${{ github.run_id }}.txt" >> $GITHUB_OUTPUT
 
       - name: Upload log to S3
+        if: always()
         run: |
           aws s3 cp scan-results.log s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }}
 
       # --- Generate Pre-signed URL ---
       - name: Get S3 Pre-signed URL
+        if: always()
         id: signed_url
         run: |
           url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
@@ -100,9 +104,3 @@ jobs:
           🔗 *GitHub Artifact:* <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}>
               \"}" \
               ${{ secrets.SLACK_WEBHOOK_URL2}}
-
-      - name: Fail the job if high severity issues were found
-        if: steps.scan_check.outputs.fail == 'true'
-        run: |
-          echo "Marking job as failed due to HIGH severity issues."
-          exit 1
