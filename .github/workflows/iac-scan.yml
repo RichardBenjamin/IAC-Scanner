@@ -53,11 +53,10 @@ jobs:
             echo "High severity issues detected. Failing the job!"
             exit 1
           fi
-       #continue-on-error: true
+        continue-on-error: true
       
       # --- Upload to GitHub Artifacts ---
       - name: Upload log to GitHub Artifacts
-        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: build-log
