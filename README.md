@@ -97,8 +97,6 @@ A sample GitHub Actions workflow is provided to:
 - Fail the job on HIGH severity issues
 - Notify a Slack channel with a summary and link to the S3 object
 
-> File location: `.github/workflows/iac-scan.yml`
-
 Slack integration is configured using a webhook secret stored in repository secrets. AWS credentials for S3 access should also be configured as GitHub secrets.
 
 ---
