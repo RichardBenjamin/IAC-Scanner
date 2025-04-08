@@ -124,6 +124,73 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+name: CI Build with Hybrid Logging
+
+on: [push]
+
+jobs:
+  build-and-log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script and capture logs
+        run: |
+          echo "🚧 Starting build..." > log.txt
+          echo "This is a test log line." >> log.txt
+          echo "❌ ERROR: Something failed." >> log.txt
+
+      # --- Upload to GitHub Artifacts ---
+      - name: Upload log to GitHub Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: log.txt
+
+      # --- Configure AWS for S3 upload ---
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # --- Upload to S3 ---
+      - name: Set log filename
+        id: logfile
+        run: echo "filename=logs/log-${{ github.run_id }}.txt" >> $GITHUB_OUTPUT
+
+      - name: Upload log to S3
+        run: |
+          aws s3 cp log.txt s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }}
+
+      # --- Generate Pre-signed URL ---
+      - name: Get S3 Pre-signed URL
+        id: signed_url
+        run: |
+          url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
+          echo "url=$url" >> $GITHUB_OUTPUT
+
+      # - name: Debug Signed URL
+      #   run: echo "Signed URL: ${{ steps.signed_url.outputs.url }}"
+
+      # --- Send Slack Notification ---
+
+      
+      - name: Notify Slack
+        run: |
+          SHORT_LOG=$(tail -n 10 log.txt | sed 's/"/\\"/g')
+          echo "S3 Link: ${{ steps.signed_url.outputs.url }}"
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"text\": \"✅ CI Build Complete* for \`main\`\n
+          \`\`\`${SHORT_LOG}\`\`\`\n
+          🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
+          📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
+              }" \
+              ${{ secrets.SLACK_WEBHOOK_URL2}}
 
       - name: Run IAC scan and save logs
         run: |
@@ -314,7 +381,74 @@ jobs:
 
 
       - name: Upload file to Slack
+        run: |name: CI Build with Hybrid Logging
+
+on: [push]
+
+jobs:
+  build-and-log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script and capture logs
         run: |
+          echo "🚧 Starting build..." > log.txt
+          echo "This is a test log line." >> log.txt
+          echo "❌ ERROR: Something failed." >> log.txt
+
+      # --- Upload to GitHub Artifacts ---
+      - name: Upload log to GitHub Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: log.txt
+
+      # --- Configure AWS for S3 upload ---
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # --- Upload to S3 ---
+      - name: Set log filename
+        id: logfile
+        run: echo "filename=logs/log-${{ github.run_id }}.txt" >> $GITHUB_OUTPUT
+
+      - name: Upload log to S3
+        run: |
+          aws s3 cp log.txt s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }}
+
+      # --- Generate Pre-signed URL ---
+      - name: Get S3 Pre-signed URL
+        id: signed_url
+        run: |
+          url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
+          echo "url=$url" >> $GITHUB_OUTPUT
+
+      # - name: Debug Signed URL
+      #   run: echo "Signed URL: ${{ steps.signed_url.outputs.url }}"
+
+      # --- Send Slack Notification ---
+
+      
+      - name: Notify Slack
+        run: |
+          SHORT_LOG=$(tail -n 10 log.txt | sed 's/"/\\"/g')
+          echo "S3 Link: ${{ steps.signed_url.outputs.url }}"
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"text\": \"✅ CI Build Complete* for \`main\`\n
+          \`\`\`${SHORT_LOG}\`\`\`\n
+          🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
+          📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
+              }" \
+              ${{ secrets.SLACK_WEBHOOK_URL2}}
+
           curl -X POST "${{ steps.get_upload_url.outputs.upload_url }}" \
             -F filename=@scan-results.log
 
@@ -324,3 +458,225 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json" \
             --data "$(jq -n --arg id "${{ steps.get_upload_url.outputs.file_id }}" --argjson channel '["${{ secrets.SLACK_CHANNEL_ID }}"]' '{files:[{id:$id}], channel_ids:$channel}')"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+name: CI Build with Hybrid Logging
+
+on: [push]
+
+jobs:
+  build-and-log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run script and capture logs
+        run: |
+          echo "🚧 Starting build..." > log.txt
+          echo "This is a test log line." >> log.txt
+          echo "❌ ERROR: Something failed." >> log.txt
+
+      # --- Upload to GitHub Artifacts ---
+      - name: Upload log to GitHub Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: log.txt
+
+      # --- Configure AWS for S3 upload ---
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # --- Upload to S3 ---
+      - name: Set log filename
+        id: logfile
+        run: echo "filename=logs/log-${{ github.run_id }}.txt" >> $GITHUB_OUTPUT
+
+      - name: Upload log to S3
+        run: |
+          aws s3 cp log.txt s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }}
+
+      # --- Generate Pre-signed URL ---
+      - name: Get S3 Pre-signed URL
+        id: signed_url
+        run: |
+          url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
+          echo "url=$url" >> $GITHUB_OUTPUT
+
+      # - name: Debug Signed URL
+      #   run: echo "Signed URL: ${{ steps.signed_url.outputs.url }}"
+
+      # --- Send Slack Notification ---
+
+      
+      - name: Notify Slack
+        run: |
+          SHORT_LOG=$(tail -n 10 log.txt | sed 's/"/\\"/g')
+          echo "S3 Link: ${{ steps.signed_url.outputs.url }}"
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"text\": \"✅ CI Build Complete* for \`main\`\n
+          \`\`\`${SHORT_LOG}\`\`\`\n
+          🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
+          📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
+              }" \
+              ${{ secrets.SLACK_WEBHOOK_URL2}}

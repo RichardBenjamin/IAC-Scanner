@@ -1,67 +1,55 @@
-name: CI Build with Hybrid Logging
+name: Infrastructure Security Scan
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build-and-log:
+  workflow_dispatch:
     runs-on: ubuntu-latest
+
+    env:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run script and capture logs
+      - name: Run IAC scan and save logs
         run: |
-          echo "🚧 Starting build..." > log.txt
-          echo "This is a test log line." >> log.txt
-          echo "❌ ERROR: Something failed." >> log.txt
+          echo "Running scan..."
+          ./scanner/scan.sh > scan_output.log 2>&1 || true
+        continue-on-error: true
 
-      # --- Upload to GitHub Artifacts ---
-      - name: Upload log to GitHub Artifacts
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Build IAC-Scanner
+        run: |
+          go build -o iac-scanner
+
+      - name: Run IAC-Scanner on target folder
+        run: |
+          ./iac-scanner ./test-files > scan-results.log
+
+      - name: Display scan results
+        run: |
+          cat scan-results.log
+
+      - name: Upload scan results
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: log.txt
+          name: iac-scan-report
+          path: scan-results.log
 
-      # --- Configure AWS for S3 upload ---
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # --- Upload to S3 ---
-      - name: Set log filename
-        id: logfile
-        run: echo "filename=logs/log-${{ github.run_id }}.txt" >> $GITHUB_OUTPUT
-
-      - name: Upload log to S3
+      - name: Fail if HIGH severity issues are found
         run: |
-          aws s3 cp log.txt s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }}
-
-      # --- Generate Pre-signed URL ---
-      - name: Get S3 Pre-signed URL
-        id: signed_url
-        run: |
-          url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
-          echo "url=$url" >> $GITHUB_OUTPUT
-
-      # - name: Debug Signed URL
-      #   run: echo "Signed URL: ${{ steps.signed_url.outputs.url }}"
-
-      # --- Send Slack Notification ---
-
-      
-      - name: Notify Slack
-        run: |
-          SHORT_LOG=$(tail -n 10 log.txt | sed 's/"/\\"/g')
-          echo "S3 Link: ${{ steps.signed_url.outputs.url }}"
-          curl -X POST -H 'Content-type: application/json' \
-          --data "{
-            \"text\": \"✅ CI Build Complete* for \`main\`\n
-          \`\`\`${SHORT_LOG}\`\`\`\n
-          🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
-          📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
-              }" \
-              ${{ secrets.SLACK_WEBHOOK_URL2}}
+          if grep -q "\[HIGH\]" scan-results.log; then
+            echo "High severity issues detected. Failing the job!"
+            exit 1
+          fi
