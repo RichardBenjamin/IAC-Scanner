@@ -45,7 +45,8 @@ jobs:
         id: signed_url
         run: |
           url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
-          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "url=$url"
+#          >> $GITHUB_OUTPUT
 
       # --- Send Slack Notification ---
       - name: Notify Slack
