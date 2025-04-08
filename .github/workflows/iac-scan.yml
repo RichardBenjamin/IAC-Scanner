@@ -48,7 +48,7 @@ jobs:
         id: scan_check
         run: |
           if grep -q "\[HIGH\]" scan-results.log; then
-            message=" High severity issues detected in files! ""
+            message=" High severity issues detected in files!"
             echo "message=$message" >> $GITHUB_OUTPUT
             exit 1 
 
