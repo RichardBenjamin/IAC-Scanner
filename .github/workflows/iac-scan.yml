@@ -22,7 +22,9 @@ jobs:
         run: |
           echo "Running scan..."
           ./scanner/scan.sh > scan_output.log 2>&1 || true
-       #continue-on-error: true
+
+
+
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -33,9 +35,22 @@ jobs:
         run: |
           go build -o iac-scanner
 
-      - name: Run IAC-Scanner on target folder
+      # - name: Run IAC-Scanner on target folder
+      #   run: |
+      #     ./iac-scanner ./test-files > scan-results.log
+
+
+      - name: Check if test-files directory is empty
+        id: file_check
         run: |
-          ./iac-scanner ./test-files > scan-results.log
+          if [ -z "$(ls -A ./test-files)" ]; then
+            message="⚠️ No files found in test-files directory"
+          else
+            message="✅ Files found in test-files, proceeding with scan"
+             ./iac-scanner ./test-files > scan-results.log
+          fi
+          echo "$message"
+          echo "message=$message" >> $GITHUB_OUTPUT
 
 
       - name: Upload scan results
