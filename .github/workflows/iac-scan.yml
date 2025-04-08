@@ -37,9 +37,6 @@ jobs:
         run: |
           ./iac-scanner ./test-files > scan-results.log
 
-      - name: Display scan results
-        run: |
-          cat scan-results.log
 
       - name: Upload scan results
         uses: actions/upload-artifact@v4
@@ -56,12 +53,12 @@ jobs:
       # continue-on-error: true
       
       # --- Upload to GitHub Artifacts ---
-      - name: Upload log to GitHub Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: scan-results.log
+      # - name: Upload log to GitHub Artifacts
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: build-log
+      #     path: scan-results.log
 
       # --- Configure AWS for S3 upload ---
       - name: Configure AWS credentials
