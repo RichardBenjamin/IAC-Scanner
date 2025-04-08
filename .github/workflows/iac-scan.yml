@@ -56,9 +56,9 @@ jobs:
           SHORT_LOG=$(tail -n 10 log.txt | sed 's/"/\\"/g')
           curl -X POST -H 'Content-type: application/json' \
           --data "{
-            \"text\": \"📦 *CI Build Complete* for \`${{ github.ref_name }}\`\n
+            \"text\": \"✅ CI Build Complete* for \`main\`\n
           \`\`\`${SHORT_LOG}\`\`\`\n
-         🔗 *S3 Logs:* <${{ steps.signed_url.outputs.url }}>
-          🔗 *GitHub Artifact:* <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}>
-          \"}" \
-                    ${{ secrets.SLACK_WEBHOOK_URL}}
+          🔗 *S3 Logs:* <$URL>\n
+          📦 *GitHub Artifact:* <https://github.com/your-org/your-repo/actions/runs/${{ github.run_id }}>\"
+              }" \
+              ${{ secrets.SLACK_WEBHOOK_URL }}
