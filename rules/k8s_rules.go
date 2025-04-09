@@ -48,14 +48,6 @@ var k8sRules = []K8sRule{
 		Message:  "Container adds extra Linux capabilities",
 		Enabled:  true,
 	},
-	// {
-	// 	Name:     "Missing Resource Limits",
-	// 	Category: "Performance",
-	// 	Severity: "MEDIUM",
-	// 	Pattern:  regexp.MustCompile(`(?i)resources:\s*\n(?![\s\S]*limits:)`),
-	// 	Message:  "Container missing resource limits",
-	// 	Enabled:  true,
-	// },
 	{
 		Name:     "Default Service Account Used",
 		Category: "Permissions",

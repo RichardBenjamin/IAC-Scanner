@@ -38,7 +38,7 @@ jobs:
           ./iac-scanner ./test-files > scan-results.log
 
 
-      - name: Upload scan results
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: iac-scan-report
