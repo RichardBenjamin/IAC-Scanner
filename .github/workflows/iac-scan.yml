@@ -18,10 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # - name: Run IAC scan and save logs
-      #   run: |
-      #     echo "Running scan..."
-      #     ./scanner/scan.sh > scan_output.log 2>&1 || true
 
  # --- Installing of Go ---
 

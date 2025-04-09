@@ -88,14 +88,6 @@ var k8sRules = []K8sRule{
 		Message:  "Container filesystem is not read-only",
 		Enabled:  true,
 	},
-	// {
-	// 	Name:     "Missing Liveness/Readiness Probes",
-	// 	Category: "Observability",
-	// 	Severity: "LOW",,,
-	// 	Pattern:  regexp.MustCompile(`(?i)containers:([\s\S]*?)(?!livenessProbe|readinessProbe)`),
-	// 	Message:  "Missing liveness or readiness probes",
-	// 	Enabled:  true,
-	// },
 	{
 		Name:     "HostPath Volume Use",
 		Category: "Storage",
