@@ -18,32 +18,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run IAC scan and save logs
-        run: |
-          echo "Running scan..."
-          ./scanner/scan.sh > scan_output.log 2>&1 || true
+      # - name: Run IAC scan and save logs
+      #   run: |
+      #     echo "Running scan..."
+      #     ./scanner/scan.sh > scan_output.log 2>&1 || true
 
+ # --- Installing of Go ---
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.22'
 
+ # --- Building of the scanner ---
+
       - name: Build IAC-Scanner
         run: |
           go build -o iac-scanner
+
+ # --- Running of the Scanner ---
 
       - name: Run IAC-Scanner on target folder
         run: |
           ./iac-scanner ./test-files > scan-results.log
 
 
+ # --- Uploading of the Artifact ---
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: iac-scan-report
           path: scan-results.log
 
+
+ # --- Checking the severity of the misconfiuration
       - name: Fail if HIGH severity issues are found
         id: scan_check
         run: |
@@ -58,15 +66,6 @@ jobs:
             echo "message=$message" >> $GITHUB_OUTPUT
           fi
           
-      # continue-on-error: true
-      
-      # --- Upload to GitHub Artifacts ---
-      # - name: Upload log to GitHub Artifacts
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-log
-      #     path: scan-results.log
 
       # --- Configure AWS for S3 upload ---
       - name: Configure AWS credentials
@@ -76,6 +75,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
 
       # --- Upload to S3 ---
       - name: Set log filename
@@ -88,6 +88,7 @@ jobs:
         run: |
           aws s3 cp scan-results.log s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }}
 
+
       # --- Generate Pre-signed URL ---
       - name: Get S3 Pre-signed URL
         if: always()
@@ -96,9 +97,9 @@ jobs:
           url=$(aws s3 presign s3://my-ci-logs-bucket/${{ steps.logfile.outputs.filename }} --expires-in 3600)
           echo "url=$url" >> $GITHUB_OUTPUT
 
+
       # --- Send Slack Notification ---
 
-      
       - name: Notify Slack
         if: always()
         run: |
